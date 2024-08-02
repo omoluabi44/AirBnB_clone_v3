@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+"""The Flask API """
 from flask import Flask
 import os
 from models import storage
@@ -11,6 +11,7 @@ app.register_blueprint(app_views)
 
 @app.teardown_appcontext
 def close_db(error):
+    """ Close Storage """
     storage.close()
 
 
