@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """The Flask API """
-from flask import Flask
+from flask import Flask, jsonify
 import os
 from models import storage
 from api.v1.views import app_views
@@ -13,6 +13,12 @@ app.register_blueprint(app_views)
 def close_db(error):
     """ Close Storage """
     storage.close()
+
+
+@app.errorhandler(404)
+def not_found(error):
+    """ 404 Error """
+    return jsonify({"error": "Not found"}), 404
 
 
 if __name__ == "__main__":
