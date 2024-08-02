@@ -17,10 +17,12 @@ from models.user import User
 import json
 import os
 import pep8
+from unittest.mock import MagicMock
 import unittest
 DBStorage = db_storage.DBStorage
 classes = {"Amenity": Amenity, "City": City, "Place": Place,
            "Review": Review, "State": State, "User": User}
+
 
 
 class TestDBStorageDocs(unittest.TestCase):
@@ -86,3 +88,44 @@ class TestFileStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
+class TestDBStorage(unittest.TestCase):
+
+    def setUp(self):
+        self.db_storage = DBStorage()
+
+    def test_get_none_none(self):
+        result = self.db_storage.get(None, None)
+        self.assertIsNone(result)
+
+    def test_get_none_id(self):
+        result = self.db_storage.get(None, "id")
+        self.assertIsNone(result)
+
+    def test_get_cls_none(self):
+        result = self.db_storage.get(MagicMock(), None)
+        self.assertIsNone(result)
+
+    def test_get_found(self):
+        self.db_storage.all = MagicMock(return_value={"Class.id": MagicMock()})
+        result = self.db_storage.get(MagicMock(), "id")
+        self.assertIsNotNone(result)
+
+    def test_get_not_found(self):
+        self.db_storage.all = MagicMock(return_value={"Class.id": MagicMock()})
+        result = self.db_storage.get(MagicMock(), "not_id")
+        self.assertIsNone(result)
+
+    def test_count_no_class(self):
+        """Test that count returns the number of objects in storage when no class is passed"""
+        self.db_storage.all = MagicMock(return_value={'A.1': 'obj1', 'B.2': 'obj2'})
+        self.assertEqual(self.db_storage.count(), 2)
+
+    def test_count_with_class(self):
+        """Test that count returns the number of objects in storage matching the given class name"""
+        self.db_storage.all = MagicMock(return_value={'A.1': 'obj1', 'B.2': 'obj2'})
+        self.assertEqual(self.db_storage.count('A'), 1)
+
+    def test_count_with_nonexistent_class(self):
+        """Test that count returns 0 when there are no objects in storage matching the given class name"""
+        self.db_storage.all = MagicMock(return_value={'A.1': 'obj1', 'B.2': 'obj2'})
+        self.assertEqual(self.db_storage.count('C'), 0)
