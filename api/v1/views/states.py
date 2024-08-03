@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """ State Module for HBNB project """
-from flask import jsonify, request, abort
+from flask import jsonify, request, abort, make_response
 from api.v1.views import app_views
 from models import storage
 from models.state import State
@@ -29,7 +29,8 @@ def state_id(state_id):
                  strict_slashes=False)
 def delete(state_id):
     """
-    Deletes a state object by its ID and returns a JSON response with an empty dictionary.
+    Deletes a state object by its ID and returns a JSON response with
+    an empty dictionary.
     """
     state = storage.get(State, state_id)
     if state is None:
@@ -40,7 +41,7 @@ def delete(state_id):
     #         storage.delete(citi)
     storage.delete(state)
     storage.save()
-    return jsonify({}), 200
+    return make_response(jsonify({}), 200)
 
 
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
@@ -56,7 +57,7 @@ def create_state():
     state = State(**data)
     storage.new(state)
     storage.save()
-    return jsonify(state.to_dict()), 201
+    return make_response(jsonify(state.to_dict()), 201)
 
 
 @app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
@@ -74,4 +75,4 @@ def update_state(state_id):
         if key not in ["id", "created_at", "updated_at"]:
             setattr(state, key, value)
     storage.save()
-    return jsonify(state.to_dict()), 200
+    return make_response(jsonify(state.to_dict()), 200)
