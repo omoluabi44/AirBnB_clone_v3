@@ -47,6 +47,8 @@ def create_place(city_id):
     if "name" not in request.get_json():
         abort(400, description="Missing name")
     data = request.get_json()
+    if not data:
+        abort(400, description='Not a JSON')
     user = storage.get(User, data["user_id"])
     if not user:
         abort(404)
