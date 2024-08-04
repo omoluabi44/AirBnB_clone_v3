@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" objects that handle all default RestFul API actions for Users """
+""" objects that handle all default RestFul API actions for places_reviews """
 from models.review import Review
 from models.place  import Place
 from models.user  import User
